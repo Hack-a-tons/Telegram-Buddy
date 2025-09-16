@@ -6,15 +6,16 @@ from ..models.context import QueryRequest, QueryResponse
 
 class BuddyAgent:
     def __init__(self):
-        self.model_provider = os.getenv("STRANDS_MODEL_PROVIDER", "openai")
-        self.model_name = os.getenv("STRANDS_MODEL_NAME", "gpt-4")
+        self.model_provider = os.getenv("STRANDS_MODEL_PROVIDER", "azure")
         
-        if self.model_provider == "openai":
-            import openai
-            self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        elif self.model_provider == "anthropic":
-            import anthropic
-            self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+        if self.model_provider == "azure":
+            from openai import AzureOpenAI
+            self.client = AzureOpenAI(
+                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+                api_key=os.getenv("AZURE_OPENAI_KEY"),
+                api_version=os.getenv("AZURE_OPENAI_API_VERSION")
+            )
+            self.deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
         
     def analyze_message(self, message: Message) -> Dict:
         """Analyze message for context and action items"""
@@ -57,20 +58,13 @@ Answer this question: {query.question}
 Focus on tasks, project status, and action items from the conversation."""
 
         try:
-            if self.model_provider == "openai":
+            if self.model_provider == "azure" and hasattr(self, 'client'):
                 response = self.client.chat.completions.create(
-                    model="gpt-3.5-turbo",
+                    model=self.deployment_name,
                     messages=[{"role": "user", "content": prompt}],
                     max_tokens=300
                 )
                 answer = response.choices[0].message.content
-            elif self.model_provider == "anthropic":
-                response = self.client.messages.create(
-                    model="claude-3-haiku-20240307",
-                    max_tokens=300,
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                answer = response.content[0].text
             else:
                 answer = self._fallback_answer(query, context_messages)
                 
