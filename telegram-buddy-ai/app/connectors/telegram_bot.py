@@ -241,11 +241,21 @@ class TelegramBuddy:
             buddy = self._get_buddy_agent()
             if buddy:
                 try:
-                    # Use the existing answer_question method instead
+                    # Use the existing answer_question method for more natural responses
                     from ..models.context import QueryRequest
                     
-                    # Create a contextual question based on the message
-                    contextual_question = f"How should I respond to: '{message.content}'?"
+                    # Create a more natural contextual question
+                    if bot_mentioned:
+                        # If bot was mentioned, respond directly to the message
+                        contextual_question = message.content.replace("@BuddianBot", "").strip()
+                        if not contextual_question or len(contextual_question) < 5:
+                            contextual_question = "What should I help with?"
+                    else:
+                        # For questions or help requests, respond naturally
+                        if "?" in message.content:
+                            contextual_question = message.content
+                        else:
+                            contextual_question = f"Respond briefly to: {message.content}"
                     
                     query_request = QueryRequest(
                         question=contextual_question,
@@ -257,10 +267,20 @@ class TelegramBuddy:
                     response_obj = buddy.answer_question(query_request, chat_context.messages)
                     
                     if response_obj and response_obj.answer:
-                        # Only respond if it's a meaningful response (not too generic)
-                        if len(response_obj.answer.strip()) > 20:
+                        # Keep responses shorter and more natural
+                        answer = response_obj.answer.strip()
+                        
+                        # Skip overly long or formal responses
+                        if len(answer) > 300 or "Summary of Action Items" in answer or "**" in answer:
+                            # Use fallback for overly formal responses
+                            if bot_mentioned:
+                                answer = "Got it! I'm listening and ready to help when needed."
+                            else:
+                                return  # Skip auto-response for complex topics
+                        
+                        if len(answer) > 20:
                             await update.message.reply_text(
-                                f"🤖 {response_obj.answer}",
+                                f"🤖 {answer}",
                                 reply_to_message_id=update.message.message_id
                             )
                 except Exception as e:
