@@ -241,14 +241,28 @@ class TelegramBuddy:
             buddy = self._get_buddy_agent()
             if buddy:
                 try:
-                    chat_context = self.context_manager.get_context(chat_id)
-                    response = buddy.generate_contextual_response(message, chat_context.messages)
+                    # Use the existing answer_question method instead
+                    from ..models.context import QueryRequest
                     
-                    if response:
-                        await update.message.reply_text(
-                            f"🤖 {response}",
-                            reply_to_message_id=update.message.message_id
-                        )
+                    # Create a contextual question based on the message
+                    contextual_question = f"How should I respond to: '{message.content}'?"
+                    
+                    query_request = QueryRequest(
+                        question=contextual_question,
+                        channel_id=chat_id,
+                        timestamp=datetime.now()
+                    )
+                    
+                    chat_context = self.context_manager.get_context(chat_id)
+                    response_obj = buddy.answer_question(query_request, chat_context.messages)
+                    
+                    if response_obj and response_obj.answer:
+                        # Only respond if it's a meaningful response (not too generic)
+                        if len(response_obj.answer.strip()) > 20:
+                            await update.message.reply_text(
+                                f"🤖 {response_obj.answer}",
+                                reply_to_message_id=update.message.message_id
+                            )
                 except Exception as e:
                     logger.error(f"Error generating response: {e}")
     
