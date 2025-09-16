@@ -130,8 +130,8 @@ class TelegramBuddy:
             # Get context for this chat
             chat_context = self.context_manager.get_context(chat_id)
             
-            # Generate response
-            response = buddy.answer_question(question, chat_context)
+            # Generate response - pass messages as a list
+            response = buddy.answer_question(question, chat_context.messages)
             
             await update.message.reply_text(
                 f"🤖 *Answer:*\n{response}",
@@ -234,7 +234,7 @@ class TelegramBuddy:
             if buddy:
                 try:
                     chat_context = self.context_manager.get_context(chat_id)
-                    response = buddy.generate_contextual_response(message, chat_context)
+                    response = buddy.generate_contextual_response(message, chat_context.messages)
                     
                     if response:
                         await update.message.reply_text(
