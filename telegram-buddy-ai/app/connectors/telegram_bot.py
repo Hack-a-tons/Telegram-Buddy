@@ -90,9 +90,6 @@ class TelegramBuddy:
     
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /help command"""
-        # Get bot username dynamically
-        bot_username = self.bot.username if self.bot.username else "BuddianBot"
-        
         help_msg = (
             "🤖 *Telegram Buddy AI Commands:*\n\n"
             "*/ask <question>* - Ask about your project\n"
@@ -105,7 +102,7 @@ class TelegramBuddy:
             "• I track conversation context\n"
             "• I detect action items and tasks\n"
             "• I can answer questions about previous discussions\n\n"
-            f"*Just mention me* @{bot_username} *in your message to get my attention!*"
+            "*Just mention me* @BuddianBot *in your message to get my attention!*"
         )
         await update.message.reply_text(help_msg, parse_mode=ParseMode.MARKDOWN)
     
