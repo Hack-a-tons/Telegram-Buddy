@@ -28,7 +28,9 @@ class ContextManager:
         if channel_id not in self.contexts:
             self.contexts[channel_id] = ConversationContext(
                 channel_id=channel_id,
-                messages=[]
+                messages=[],
+                project_id="default",  # Add default project_id
+                last_updated=datetime.now()  # Add current timestamp
             )
         
         # Add message to context
@@ -48,7 +50,9 @@ class ContextManager:
         if channel_id not in self.contexts:
             self.contexts[channel_id] = ConversationContext(
                 channel_id=channel_id,
-                messages=[]
+                messages=[],
+                project_id="default",  # Add default project_id
+                last_updated=datetime.now()  # Add current timestamp
             )
         
         context = self.contexts[channel_id]
@@ -63,7 +67,9 @@ class ContextManager:
             # Create a filtered context object
             filtered_context = ConversationContext(
                 channel_id=channel_id,
-                messages=recent_messages
+                messages=recent_messages,
+                project_id="default",  # Add default project_id
+                last_updated=datetime.now()  # Add current timestamp
             )
             return filtered_context
         
