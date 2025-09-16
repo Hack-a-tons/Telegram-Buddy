@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form
 from typing import List
 from datetime import datetime
 import uuid
@@ -19,7 +19,7 @@ def get_buddy_agent():
     return buddy_agent
 
 @router.post("/message")
-async def submit_message(content: str, project_id: str = "default"):
+async def submit_message(content: str = Form(), project_id: str = Form(default="default")):
     """Submit a new message for processing"""
     message = Message(
         content=content,
