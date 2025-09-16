@@ -130,11 +130,19 @@ class TelegramBuddy:
             # Get context for this chat
             chat_context = self.context_manager.get_context(chat_id)
             
-            # Generate response - pass messages as a list
-            response = buddy.answer_question(question, chat_context.messages)
+            # Create QueryRequest object as expected by BuddyAgent
+            from ..models.context import QueryRequest
+            query_request = QueryRequest(
+                question=question,
+                channel_id=chat_id,
+                timestamp=datetime.now()
+            )
+            
+            # Generate response
+            response = buddy.answer_question(query_request, chat_context.messages)
             
             await update.message.reply_text(
-                f"🤖 *Answer:*\n{response}",
+                f"🤖 *Answer:*\n{response.answer}",
                 parse_mode=ParseMode.MARKDOWN,
                 reply_to_message_id=update.message.message_id
             )
