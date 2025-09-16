@@ -7,15 +7,21 @@ from ..models.context import QueryRequest, QueryResponse
 class BuddyAgent:
     def __init__(self):
         self.model_provider = os.getenv("STRANDS_MODEL_PROVIDER", "azure")
+        self.client = None
+        self.deployment_name = None
         
-        if self.model_provider == "azure":
-            from openai import AzureOpenAI
-            self.client = AzureOpenAI(
-                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-                api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-                api_version=os.getenv("AZURE_OPENAI_API_VERSION")
-            )
-            self.deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+        try:
+            if self.model_provider == "azure":
+                from openai import AzureOpenAI
+                self.client = AzureOpenAI(
+                    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+                    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+                    api_version=os.getenv("AZURE_OPENAI_API_VERSION")
+                )
+                self.deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+        except Exception as e:
+            print(f"Warning: Could not initialize Azure OpenAI client: {e}")
+            self.client = None
         
     def analyze_message(self, message: Message) -> Dict:
         """Analyze message for context and action items"""
