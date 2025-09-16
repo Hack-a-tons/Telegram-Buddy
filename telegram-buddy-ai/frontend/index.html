@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Buddy AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Telegram Buddy AI</h1>
+        <p>AI agent for developer conversations</p>
+        
+        <div class="section">
+            <h2>Add Message</h2>
+            <textarea id="messageInput" placeholder="Paste your conversation message here..."></textarea>
+            <input type="text" id="projectInput" placeholder="Project ID (optional)" value="default">
+            <button onclick="submitMessage()">Submit Message</button>
+        </div>
+        
+        <div class="section">
+            <h2>Ask Buddy</h2>
+            <input type="text" id="questionInput" placeholder="What would you like to know?">
+            <button onclick="askQuestion()">Ask</button>
+            <div id="answerOutput"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Action Items</h2>
+            <button onclick="loadActions()">Load Action Items</button>
+            <div id="actionsOutput"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Conversation Context</h2>
+            <button onclick="loadContext()">Load Context</button>
+            <div id="contextOutput"></div>
+        </div>
+    </div>
+    
+    <script src="/static/script.js"></script>
+</body>
+</html>
