@@ -234,7 +234,7 @@ class TelegramBuddy:
         self.context_manager.add_message(message)
         
         # Check if bot was mentioned or should respond
-        bot_mentioned = f"@{self.bot.username}" in update.message.text if self.bot.username else False
+        bot_mentioned = "@BuddianBot" in update.message.text  # Hardcode bot username
         should_respond = self.response_engine.should_respond(message, bot_mentioned)
         
         if should_respond:
