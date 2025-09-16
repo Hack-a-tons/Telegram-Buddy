@@ -64,7 +64,7 @@ Answer this question: {query.question}
 Focus on tasks, project status, and action items from the conversation."""
 
         try:
-            if self.model_provider == "azure" and hasattr(self, 'client'):
+            if self.model_provider == "azure" and self.client is not None:
                 response = self.client.chat.completions.create(
                     model=self.deployment_name,
                     messages=[{"role": "user", "content": prompt}],
@@ -75,6 +75,7 @@ Focus on tasks, project status, and action items from the conversation."""
                 answer = self._fallback_answer(query, context_messages)
                 
         except Exception as e:
+            print(f"AI API error: {e}")
             answer = self._fallback_answer(query, context_messages)
         
         return QueryResponse(
