@@ -12,7 +12,7 @@ class BuddyAgent:
             from openai import AzureOpenAI
             self.client = AzureOpenAI(
                 azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-                api_key=os.getenv("AZURE_OPENAI_KEY"),
+                api_key=os.getenv("AZURE_OPENAI_API_KEY"),
                 api_version=os.getenv("AZURE_OPENAI_API_VERSION")
             )
             self.deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
