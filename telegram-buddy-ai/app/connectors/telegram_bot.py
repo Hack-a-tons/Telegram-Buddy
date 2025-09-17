@@ -106,6 +106,8 @@ class TelegramBuddy:
             "   Example: `/ask What's the status of the API integration?`\n\n"
             "*/status* - Show current project overview\n\n"
             "*/actions* - List unresolved action items\n\n"
+            "*/done <number>* - Mark action item as resolved\n"
+            "   Example: `/done 2` to mark item #2 as done\n\n"
             "*/help* - Show this help message\n\n"
             "*Automatic Features:*\n"
             "• I listen to all group messages\n"
