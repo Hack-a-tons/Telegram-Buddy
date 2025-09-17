@@ -304,6 +304,16 @@ class TelegramBuddy:
     def run(self):
         """Start the Telegram bot"""
         logger.info("Starting Telegram Buddy AI bot...")
+        logger.info("Bot handlers registered:")
+        for handler in self.application.handlers[0]:  # Default group
+            logger.info(f"  - {type(handler).__name__}: {handler}")
+        
+        # Add error handler
+        async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+            logger.error(f"Exception while handling an update: {context.error}")
+        
+        self.application.add_error_handler(error_handler)
+        
         self.application.run_polling(drop_pending_updates=True)
 
 # app/services/response_engine.py - Add this method
