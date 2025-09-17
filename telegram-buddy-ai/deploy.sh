@@ -3,7 +3,11 @@
 # Telegram Buddy AI Deployment Script
 # Run this on your Ubuntu server
 
-echo "🚀 Deploying Telegram Buddy AI..."
+# Change to script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+echo "🚀 Deploying Telegram Buddy AI from $SCRIPT_DIR..."
 
 # Check if .env file exists
 if [ ! -f .env ]; then
@@ -29,15 +33,22 @@ if ! docker compose version &> /dev/null; then
     exit 1
 fi
 
-echo "📦 Building and starting services..."
+echo "📦 Building services..."
 cd docker
+if ! docker compose build; then
+    echo "❌ Build failed! Deployment aborted."
+    exit 1
+fi
+
+echo "🔄 Stopping existing services..."
 docker compose down
-docker compose build
+
+echo "🚀 Starting services..."
 docker compose up -d
 
 echo "✅ Deployment complete!"
 echo ""
-echo "🌐 Web interface: http://your-server:8000"
+echo "🌐 Web interface: http://your-server:${PORT:-8000}"
 echo "🤖 Telegram bot: Running in background"
 echo ""
 echo "📊 Check status:"
