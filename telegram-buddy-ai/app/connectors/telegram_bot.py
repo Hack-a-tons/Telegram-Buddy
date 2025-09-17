@@ -50,6 +50,7 @@ class TelegramBuddy:
         self.application.add_handler(CommandHandler("ask", self.ask_command))
         self.application.add_handler(CommandHandler("status", self.status_command))
         self.application.add_handler(CommandHandler("actions", self.actions_command))
+        self.application.add_handler(CommandHandler("done", self.done_command))
         
         # All non-command messages - this should catch regular text
         self.application.add_handler(
