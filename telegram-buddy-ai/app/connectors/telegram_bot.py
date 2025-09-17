@@ -192,6 +192,41 @@ class TelegramBuddy:
             logger.error(f"Error getting status: {e}")
             await update.message.reply_text("❌ Error retrieving chat status.")
     
+    async def done_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle /done command to mark action items as resolved"""
+        if not context.args:
+            await update.message.reply_text(
+                "Please provide the action item number to mark as done.\n"
+                "Example: `/done 2` to mark item #2 as resolved.\n"
+                "Use `/actions` to see the list with numbers."
+            )
+            return
+        
+        try:
+            item_number = int(context.args[0])
+            chat_id = str(update.effective_chat.id)
+            
+            # Mark the action as resolved
+            success = self.context_manager.mark_action_resolved(chat_id, item_number - 1)  # Convert to 0-based index
+            
+            if success:
+                await update.message.reply_text(
+                    f"✅ Action item #{item_number} marked as resolved!",
+                    reply_to_message_id=update.message.message_id
+                )
+            else:
+                await update.message.reply_text(
+                    f"❌ Could not find action item #{item_number}. Use `/actions` to see current items."
+                )
+                
+        except ValueError:
+            await update.message.reply_text(
+                "Please provide a valid number. Example: `/done 2`"
+            )
+        except Exception as e:
+            logger.error(f"Error marking action as done: {e}")
+            await update.message.reply_text("❌ Error marking action as resolved.")
+    
     async def actions_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /actions command"""
         chat_id = str(update.effective_chat.id)
