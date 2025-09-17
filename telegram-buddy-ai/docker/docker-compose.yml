@@ -1,7 +1,8 @@
 version: '3.8'
 
 services:
-  telegram-buddy-ai:
+  # Web interface service
+  web:
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -17,3 +18,17 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # Telegram bot service
+  telegram-bot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: ["python", "telegram_runner.py"]
+    env_file:
+      - ../.env
+    volumes:
+      - ../data:/app/data
+    restart: unless-stopped
+    depends_on:
+      - web
