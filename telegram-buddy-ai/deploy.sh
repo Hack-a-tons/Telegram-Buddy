@@ -23,18 +23,17 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if docker-compose is installed
-if ! command -v docker-compose &> /dev/null; then
-    echo "❌ docker-compose not found. Installing..."
-    sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
+# Check if docker compose is available (modern Docker includes it)
+if ! docker compose version &> /dev/null; then
+    echo "❌ docker compose not available. Please update Docker to a newer version."
+    exit 1
 fi
 
 echo "📦 Building and starting services..."
 cd docker
-docker-compose down
-docker-compose build
-docker-compose up -d
+docker compose down
+docker compose build
+docker compose up -d
 
 echo "✅ Deployment complete!"
 echo ""
@@ -42,8 +41,8 @@ echo "🌐 Web interface: http://your-server:8000"
 echo "🤖 Telegram bot: Running in background"
 echo ""
 echo "📊 Check status:"
-echo "  docker-compose logs web"
-echo "  docker-compose logs telegram-bot"
+echo "  docker compose logs web"
+echo "  docker compose logs telegram-bot"
 echo ""
 echo "🛑 Stop services:"
-echo "  docker-compose down"
+echo "  docker compose down"
