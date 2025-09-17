@@ -212,11 +212,11 @@ class TelegramBuddy:
         
         chat_id = str(update.effective_chat.id)
         
-        # Only process messages in active groups
+        # Process all messages in private chats, but only activated groups
         if update.effective_chat.type in ['group', 'supergroup']:
             if int(chat_id) not in self.active_groups:
                 logger.info(f"Bot not activated in group {chat_id}, ignoring message")
-                return  # Bot not activated in this group
+                return
         
         # Create message object
         message = Message(
@@ -235,35 +235,29 @@ class TelegramBuddy:
         
         logger.info(f"Processing message from {message.metadata['username']}: {message.content[:50]}...")
         
-        # Store message in context
+        # ALWAYS store message in context (this was the bug!)
         self.context_manager.add_message(message)
         logger.info(f"Message added to context for channel {chat_id}")
         
         # Check if bot was mentioned or should respond
-        bot_mentioned = "@BuddianBot" in update.message.text  # Hardcode bot username
+        bot_mentioned = "@BuddianBot" in update.message.text or "@buddianbot" in update.message.text.lower()
         should_respond = self.response_engine.should_respond(message, bot_mentioned)
         
         logger.info(f"Bot mentioned: {bot_mentioned}, Should respond: {should_respond}")
         
+        # Only respond if explicitly mentioned or asked a question, but ALWAYS track the message
         if should_respond:
             buddy = self._get_buddy_agent()
             if buddy:
                 try:
-                    # Use the existing answer_question method for more natural responses
                     from ..models.context import QueryRequest
                     
-                    # Create a more natural contextual question
                     if bot_mentioned:
-                        # If bot was mentioned, respond directly to the message
-                        contextual_question = message.content.replace("@BuddianBot", "").strip()
+                        contextual_question = message.content.replace("@BuddianBot", "").replace("@buddianbot", "").strip()
                         if not contextual_question or len(contextual_question) < 5:
                             contextual_question = "What should I help with?"
                     else:
-                        # For questions or help requests, respond naturally
-                        if "?" in message.content:
-                            contextual_question = message.content
-                        else:
-                            contextual_question = f"Respond briefly to: {message.content}"
+                        contextual_question = message.content
                     
                     query_request = QueryRequest(
                         question=contextual_question,
@@ -276,16 +270,7 @@ class TelegramBuddy:
                     response_obj = buddy.answer_question(query_request, chat_context.messages)
                     
                     if response_obj and response_obj.answer:
-                        # Keep responses shorter and more natural
                         answer = response_obj.answer.strip()
-                        
-                        # Skip overly long or formal responses
-                        if len(answer) > 300 or "Summary of Action Items" in answer or "**" in answer:
-                            # Use fallback for overly formal responses
-                            if bot_mentioned:
-                                answer = "Got it! I'm listening and ready to help when needed."
-                            else:
-                                return  # Skip auto-response for complex topics
                         
                         if len(answer) > 20:
                             logger.info(f"Sending response: {answer[:50]}...")
