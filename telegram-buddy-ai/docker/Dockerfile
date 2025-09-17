@@ -20,8 +20,5 @@ COPY telegram_runner.py .
 # Create data directory for persistence
 RUN mkdir -p /app/data
 
-# Expose port for web interface
-EXPOSE 8000
-
-# Default command runs web interface
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Default command runs web interface with PORT from environment
+CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
