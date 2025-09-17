@@ -51,9 +51,14 @@ class TelegramBuddy:
         self.application.add_handler(CommandHandler("status", self.status_command))
         self.application.add_handler(CommandHandler("actions", self.actions_command))
         
-        # All non-command messages
+        # All non-command messages - this should catch regular text
         self.application.add_handler(
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message)
+        )
+        
+        # Add a catch-all handler for debugging
+        self.application.add_handler(
+            MessageHandler(filters.ALL, self.debug_handler)
         )
     
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
