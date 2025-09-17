@@ -63,15 +63,15 @@ cp .env.example .env
 4. **Monitor:**
 ```bash
 cd docker
-docker-compose logs web          # Web interface logs
-docker-compose logs telegram-bot # Telegram bot logs
-docker-compose logs -f           # Follow all logs
+docker compose logs web          # Web interface logs
+docker compose logs telegram-bot # Telegram bot logs
+docker compose logs -f           # Follow all logs
 ```
 
 5. **Stop:**
 ```bash
 cd docker
-docker-compose down
+docker compose down
 ```
 
 ## Environment Variables
