@@ -11,8 +11,8 @@ class ResponseEngine:
         if bot_mentioned:
             return True
         
-        # Only respond to direct questions (with question marks)
-        if "?" in message.content:
+        # Only respond to direct questions that end with question marks
+        if message.content.strip().endswith("?"):
             return True
         
         # Don't respond to anything else - just track silently
