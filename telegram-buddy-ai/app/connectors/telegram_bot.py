@@ -208,11 +208,14 @@ class TelegramBuddy:
     
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle regular messages in the group"""
+        logger.info(f"Received message: {update.message.text[:50]}... from {update.effective_user.username}")
+        
         chat_id = str(update.effective_chat.id)
         
         # Only process messages in active groups
         if update.effective_chat.type in ['group', 'supergroup']:
             if int(chat_id) not in self.active_groups:
+                logger.info(f"Bot not activated in group {chat_id}, ignoring message")
                 return  # Bot not activated in this group
         
         # Create message object
@@ -230,12 +233,17 @@ class TelegramBuddy:
             }
         )
         
+        logger.info(f"Processing message from {message.metadata['username']}: {message.content[:50]}...")
+        
         # Store message in context
         self.context_manager.add_message(message)
+        logger.info(f"Message added to context for channel {chat_id}")
         
         # Check if bot was mentioned or should respond
         bot_mentioned = "@BuddianBot" in update.message.text  # Hardcode bot username
         should_respond = self.response_engine.should_respond(message, bot_mentioned)
+        
+        logger.info(f"Bot mentioned: {bot_mentioned}, Should respond: {should_respond}")
         
         if should_respond:
             buddy = self._get_buddy_agent()
@@ -259,6 +267,7 @@ class TelegramBuddy:
                     
                     query_request = QueryRequest(
                         question=contextual_question,
+                        project_id=chat_id,
                         channel_id=chat_id,
                         timestamp=datetime.now()
                     )
@@ -279,12 +288,15 @@ class TelegramBuddy:
                                 return  # Skip auto-response for complex topics
                         
                         if len(answer) > 20:
+                            logger.info(f"Sending response: {answer[:50]}...")
                             await update.message.reply_text(
                                 f"🤖 {answer}",
                                 reply_to_message_id=update.message.message_id
                             )
                 except Exception as e:
                     logger.error(f"Error generating response: {e}")
+            else:
+                logger.warning("BuddyAgent not available")
     
     def run(self):
         """Start the Telegram bot"""
