@@ -13,6 +13,8 @@ class ConversationContext(BaseModel):
 class QueryRequest(BaseModel):
     question: str
     project_id: str = "default"
+    channel_id: str = "default"
+    timestamp: datetime = None
 
 class QueryResponse(BaseModel):
     answer: str
