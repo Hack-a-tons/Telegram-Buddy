@@ -66,8 +66,11 @@ class TelegramBuddy:
         chat_id = update.effective_chat.id
         chat_type = update.effective_chat.type
         
+        logger.info(f"START command received in chat {chat_id} (type: {chat_type})")
+        
         if chat_type in ['group', 'supergroup']:
             self.active_groups.add(chat_id)
+            logger.info(f"Activated bot in group {chat_id}. Active groups: {self.active_groups}")
             welcome_msg = (
                 "🤖 *Telegram Buddy AI activated!*\n\n"
                 "I'm now listening to your conversations and can help with:\n"
@@ -79,9 +82,10 @@ class TelegramBuddy:
                 "/status - Show current project status\n"
                 "/actions - List unresolved action items\n"
                 "/help - Show this help message\n\n"
-                "Just mention me (@your_bot_name) or use commands to interact!"
+                "Just mention me (@BuddianBot) or use commands to interact!"
             )
         else:
+            logger.info(f"START command in private chat {chat_id}")
             welcome_msg = (
                 "👋 Hi! I'm Telegram Buddy AI.\n\n"
                 "Add me to your developer groups where I can:\n"
