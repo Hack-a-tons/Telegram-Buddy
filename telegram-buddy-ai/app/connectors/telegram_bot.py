@@ -211,6 +211,15 @@ class TelegramBuddy:
             logger.error(f"Error getting actions: {e}")
             await update.message.reply_text("❌ Error retrieving action items.")
     
+    async def debug_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Debug handler to see all messages"""
+        if update.message:
+            logger.info(f"DEBUG: Received message type: {update.message.content_type}")
+            logger.info(f"DEBUG: Message text: {update.message.text}")
+            logger.info(f"DEBUG: Chat type: {update.effective_chat.type}")
+            logger.info(f"DEBUG: Chat ID: {update.effective_chat.id}")
+            logger.info(f"DEBUG: Active groups: {self.active_groups}")
+    
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle regular messages in the group"""
         logger.info(f"Received message: {update.message.text[:50]}... from {update.effective_user.username}")
